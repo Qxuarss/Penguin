@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penguin</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: #181818;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            color: white;
+        }
+
+        .dark-area {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #181818;
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        .continue-text {
+            font-size: 2rem;
+            opacity: 0;
+            animation: fadeIn 2s forwards 1s;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .arrow-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            opacity: 0;
+            animation: fadeIn 2s forwards 1.5s;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px #e5e7eb
+        }
+
+        .arrow-button:hover {
+            transform: scale(1.1);
+            opacity: 0.9 !important;
+        }
+
+        .arrow {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #e5e7eb;
+            transform: translateY(5px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .dot {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 2s infinite;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0; }
+            50% { opacity: 0.3; }
+            100% { opacity: 0; }
+        }
+
+        .music-control {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: white;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            opacity: 0.7;
+        }
+
+        .music-control:hover {
+            opacity: 1;
+        }
+
+        .volume-slider {
+            width: 100px;
+            cursor: pointer;
+        }
+
+        .music-icon {
+            transition: transform 0.2s;
+        }
+    </style>
+</head>
+<body>
+    <!-- Müzik -->
+    <audio id="bgMusic" loop>
+        <source src="sarki.mp3" type="audio/mpeg">
+        Tarayıcınız audio öğesini desteklemiyor.
+    </audio>
+
+    <!-- Müzik kontrol -->
+    <div class="music-control" id="musicControl">
+        <span class="music-icon">🔊</span>
+        <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.45">
+    </div>
+
+    <div class="dark-area"></div>
+    <div class="continue-text">Başlamadan önce herhangi bir yere tıklayarak bir süre bekle!</div>
+    <div class="arrow-button" onclick="window.location.href='login.html'">
+        <div class="arrow"></div>
+    </div>
+
+    <script>
+        // Yıldız noktalarını oluştur
+        const dotCount = 100;
+        for (let i = 0; i < dotCount; i++) createDot();
+
+        function createDot() {
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            dot.style.left = `${Math.random() * window.innerWidth}px`;
+            dot.style.top = `${Math.random() * window.innerHeight}px`;
+            const size = 1 + Math.random() * 2;
+            dot.style.width = `${size}px`;
+            dot.style.height = `${size}px`;
+            dot.style.animationDuration = `${1 + Math.random() * 2}s`;
+            dot.style.animationDelay = `${Math.random() * 2}s`;
+            document.body.appendChild(dot);
+        }
+
+        // Pencere boyutu değiştiğinde noktaları yeniden konumlandır
+        window.addEventListener('resize', () => {
+            document.querySelectorAll('.dot').forEach(dot => {
+                dot.style.left = `${Math.random() * window.innerWidth}px`;
+                dot.style.top = `${Math.random() * window.innerHeight}px`;
+            });
+        });
+
+        // Müzik ve ses kontrolü
+        const bgMusic = document.getElementById('bgMusic');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const musicControl = document.getElementById('musicControl');
+        const musicIcon = document.querySelector('.music-icon');
+        
+        // Başlangıç ses seviyesi
+        bgMusic.volume = 0.45;
+
+        // Sayfa yüklendiğinde müziği başlat
+        document.addEventListener('DOMContentLoaded', () => {
+            const playPromise = bgMusic.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    // Otomatik oynatma engellendi, kullanıcı etkileşimi bekleyeceğiz
+                    musicControl.style.display = 'flex'; // Müzik kontrolünü göster
+                    
+                    // Tüm sayfaya tıklama olayı ekle
+                    document.body.addEventListener('click', function initAudio() {
+                        bgMusic.play();
+                        document.body.removeEventListener('click', initAudio);
+                    }, { once: true });
+                });
+            }
+        });
+
+        // Ses seviyesi değiştirildiğinde güncelle
+        volumeSlider.addEventListener('input', () => {
+            bgMusic.volume = parseFloat(volumeSlider.value);
+            
+            // Ses seviyesine göre ikonu güncelle
+            if (bgMusic.volume === 0) {
+                musicIcon.textContent = '🔇';
+            } else if (bgMusic.volume < 0.5) {
+                musicIcon.textContent = '🔈';
+            } else {
+                musicIcon.textContent = '🔊';
+            }
+        });
+
+        // Müzik kontrolüne tıklandığında sesi aç/kapa6
+        musicControl.addEventListener('click', (e) => {
+            // Eğer tıklama volume slider üzerinde olduysa işlem yapma
+            if (e.target === volumeSlider) return;
+            
+            if (bgMusic.paused) {
+                bgMusic.play();
+                musicIcon.textContent = bgMusic.volume === 0 ? '🔇' : 
+                                      bgMusic.volume < 0.5 ? '🔈' : '🔊';
+            } else {
+                bgMusic.pause();
+                musicIcon.textContent = '🔇';
+            }
+        });
+    </script>
+</body>
+</html>

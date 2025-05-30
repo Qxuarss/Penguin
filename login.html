@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penguin - login</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: #181818;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', monospace;
+            color: white;
+        }
+        
+        .login-container {
+            background-color: #282828;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            width: 300px;
+            text-align: center;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            position: relative;
+        }
+        
+        .input-label::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.5), transparent);
+            z-index: -1;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            background-color: #383838;
+            border: 1px solid #484848;
+            border-radius: 5px;
+            color: white;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: rgba(0, 255, 0, 0.5);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+        
+        .login-button {
+            background-color: #1e3a8a;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .login-button:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 58, 138, 0.4);
+        }
+        
+        .glow-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            border-radius: 5px;
+            background: radial-gradient(circle at center, rgba(0, 255, 0, 0.3), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .input-group:hover .glow-effect {
+            opacity: 0.5;
+        }
+        .dot {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 2s infinite;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0; }
+            50% { opacity: 0.4; }
+            100% { opacity: 0; }
+        }
+        .music-control {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: white;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            opacity: 0.7;
+        }
+
+        .music-control:hover {
+            opacity: 1;
+        }
+
+        .volume-slider {
+            width: 100px;
+            cursor: pointer;
+        }
+
+        .music-icon {
+            transition: transform 0.2s;
+        }
+
+        /* Uyarı Kutusu Stilleri */
+        .message-box-container {
+            position: fixed;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%) translateX(-100%); /* Başlangıçta ekran dışı */
+            z-index: 1000;
+            transition: transform 0.5s ease-in-out; /* Animasyon için geçiş */
+            padding-right: 20px; /* Kenar çubuğu ile boşluk için */
+        }
+
+        .message-box-container.show {
+            transform: translateY(-50%) translateX(0); /* Ekrana gel */
+        }
+
+        .message-box {
+            background-color: rgba(24, 24, 24, 0.7); /* Şeffaf koyu arka plan */
+            border: 1px solid rgba(255, 255, 255, 0.3); /* İnce beyaz dış hat */
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5); /* Parlak dış hat */
+            padding: 20px 30px;
+            border-radius: 10px;
+            max-width: 300px; /* Maksimum genişlik */
+            text-align: center;
+        }
+
+        .message-box p {
+            margin: 0;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            color: #e5e7eb; /* Mesaj rengi */
+        }
+
+        /* Yan Taraf Dikdörtgen Stilleri */
+        .sidebar-toggle {
+            position: fixed;
+            top: 50%;
+            left: 0; /* Sol kenara yapışık */
+            transform: translateY(-50%);
+            width: 5px; /* Dikdörtgenin genişliği */
+            height: 120px; /* Dikdörtgenin yüksekliği */
+            background-color: rgba(255, 255, 255, 0.8); /* Beyaz şeffaf renk */
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+            cursor: pointer;
+            z-index: 1001; /* Uyarı kutusunun üstünde olmalı */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.6); /* Parlaklık */
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar-toggle:hover {
+            background-color: rgba(255, 255, 255, 1); /* Hover'da daha belirgin */
+        }
+
+        /* İsteğe bağlı: Yan çubukta okunabilir bir işaret (e.g., ok) */
+        .sidebar-toggle::before {
+            content: ' '; /* Veya '«' ya da başka bir ikon */
+            color: #181818;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="message-box-container" id="messageBoxContainer">
+        <div class="message-box">
+            <p>Merhaba! Bu bir uyarı mesajıdır. Sayfamıza hoş geldiniz!</p>
+            </div>
+    </div>
+
+    <div class="sidebar-toggle" id="sidebarToggle">
+        </div>
+
+    <!--main kod-->
+    <div class="login-container">
+        <div class="input-group">
+            <label class="input-label">Kullanıcı adı</label>
+            <div class="glow-effect"></div>
+            <input type="text" class="input-field" id="username">
+        </div>
+        
+        <div class="input-group">
+            <label class="input-label">Şifre</label>
+            <div class="glow-effect"></div>
+            <input type="password" class="input-field" id="password">
+        </div>
+        
+        <button class="login-button" onclick="checkCredentials()">Giriş Yap</button>
+    </div>
+     <!-- Müzik -->
+    <audio id="bgMusic" loop>
+        <source src="sarki.mp3" type="audio/mpeg">
+        Tarayıcınız audio öğesini desteklemiyor.
+    </audio>
+
+    <!-- Müzik kontrol -->
+    <div class="music-control" id="musicControl">
+        <span class="music-icon">🔊</span>
+        <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.45">
+    </div>
+
+    <script>
+        function checkCredentials() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username === "Qxuarss" && password === "Qxuarss") {
+                window.location.href = "rengin.html";
+            } 
+            else if (username === "Yusuf" && password === "123") {
+                window.location.href = "deneme.html";
+            }
+            else {
+                alert("Kullanıcı adı veya şifre hatalı!");
+            }
+        }
+        
+        // Enter tuşu ile giriş yapmayı sağlar
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkCredentials();
+            }
+        });
+         // Nokta sayısı
+        const dotCount = 100;
+        
+        // Noktaları oluştur
+        for (let i = 0; i < dotCount; i++) {
+            createDot();
+        }
+        
+        function createDot() {
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            
+            // Rastgele pozisyon
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight;
+            dot.style.left = `${x}px`;
+            dot.style.top = `${y}px`;
+            
+            // Rastgele boyut (1px - 3px arası)
+            const size = 1 + Math.random() * 2;
+            dot.style.width = `${size}px`;
+            dot.style.height = `${size}px`;
+            
+            // Rastgele animasyon süresi (1s - 3s arası)
+            const duration = 1 + Math.random() * 2;
+            dot.style.animationDuration = `${duration}s`;
+            
+            // Rastgele animasyon gecikmesi (0s - 2s arası)
+            const delay = Math.random() * 2;
+            dot.style.animationDelay = `${delay}s`;
+            
+            document.body.appendChild(dot);
+        }
+        
+        // Pencere boyutu değiştiğinde noktaları yeniden konumlandır
+        window.addEventListener('resize', function() {
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach(dot => {
+                const x = Math.random() * window.innerWidth;
+                const y = Math.random() * window.innerHeight;
+                dot.style.left = `${x}px`;
+                dot.style.top = `${y}px`;
+            });
+        });
+        // Müzik ve ses kontrolü
+        const bgMusic = document.getElementById('bgMusic');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const musicControl = document.getElementById('musicControl');
+        const musicIcon = document.querySelector('.music-icon');
+        
+        // Başlangıç ses seviyesi
+        bgMusic.volume = 0.45;
+
+        // Sayfa yüklendiğinde müziği başlat
+        document.addEventListener('DOMContentLoaded', () => {
+            const playPromise = bgMusic.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    // Otomatik oynatma engellendi, kullanıcı etkileşimi bekleyeceğiz
+                    musicControl.style.display = 'flex'; // Müzik kontrolünü göster
+                    
+                    // Tüm sayfaya tıklama olayı ekle
+                    document.body.addEventListener('click', function initAudio() {
+                        bgMusic.play();
+                        document.body.removeEventListener('click', initAudio);
+                    }, { once: true });
+                });
+            }
+        });
+
+        // Ses seviyesi değiştirildiğinde güncelle
+        volumeSlider.addEventListener('input', () => {
+            bgMusic.volume = parseFloat(volumeSlider.value);
+            
+            // Ses seviyesine göre ikonu güncelle
+            if (bgMusic.volume === 0) {
+                musicIcon.textContent = '🔇';
+            } else if (bgMusic.volume < 0.5) {
+                musicIcon.textContent = '🔈';
+            } else {
+                musicIcon.textContent = '🔊';
+            }
+        });
+
+        // Müzik kontrolüne tıklandığında sesi aç/kapa
+        musicControl.addEventListener('click', (e) => {
+            // Eğer tıklama volume slider üzerinde olduysa işlem yapma
+            if (e.target === volumeSlider) return;
+            
+            if (bgMusic.paused) {
+                bgMusic.play();
+                musicIcon.textContent = bgMusic.volume === 0 ? '🔇' : 
+                                      bgMusic.volume < 0.5 ? '🔈' : '🔊';
+            } else {
+                bgMusic.pause();
+                musicIcon.textContent = '🔇';
+            }
+        });
+
+        // deneme script
+
+        const messageBoxContainer = document.getElementById('messageBoxContainer');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        let timer; // Zamanlayıcıyı tutacak değişken
+
+        // Mesaj kutusunu göster ve sonra gizle
+        function showAndHideMessageBox() {
+            clearTimeout(timer); // Önceki zamanlayıcıyı temizle (eğer varsa)
+            messageBoxContainer.classList.add('show'); // Kutuyu göster
+
+            // 5 saniye sonra kutuyu gizle
+            timer = setTimeout(() => {
+                messageBoxContainer.classList.remove('show'); // Kutuyu gizle
+            }, 5000); // 5 saniye = 5000 milisaniye
+        }
+
+        // Sayfa yüklendiğinde otomatik olarak uyarıyı göster
+        document.addEventListener('DOMContentLoaded', () => {
+            showAndHideMessageBox();
+        });
+
+        // Yan çubuğa tıklandığında uyarıyı tekrar göster
+        sidebarToggle.addEventListener('click', () => {
+            showAndHideMessageBox();
+        });
+
+
+    </script>
+</body>
+</html>
