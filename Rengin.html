@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
         body {
             margin: 0;
             padding: 0;
@@ -12,7 +15,7 @@
             background-color: #333;
             font-family: 'Arial', sans-serif;
             color: white;
-            overflow: hidden; /* Changed from overflow-x: hidden; to overflow: hidden; */
+            overflow-x: hidden;
             transition: background 1s ease;
         }
 
@@ -55,14 +58,17 @@
             100% { opacity: 0; }
         }
 
-        /* Ana içerik */
-        .main-content {
+        /* Sayfa Bölümleri Genel Stili */
+        .page {
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             position: relative;
+            padding: 5vh 0;
+            box-sizing: border-box;
+            width: 100%;
         }
 
         /* İçerik animasyonu */
@@ -76,7 +82,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* MODIFIED Video konteyner stili */
+        /* Video konteyner stili */
         .video-container {
             width: 80%;
             max-width: 800px;
@@ -84,21 +90,8 @@
             border-radius: 10px;
             overflow: hidden;
             position: relative;
-            left: 155px;
         }
 
-        /* MODIFIED: Hide the custom play icon */
-        .video-container::before {
-            display: none !important;
-        }
-        
-        /* MODIFIED: Remove hover effects from video-container if it's no longer interactive */
-        .video-container:hover {
-            transform: none; 
-            box-shadow: none; 
-        }
-
-        /* MODIFIED: Video styling with its own border */
         video {
             width: 100%;
             height: 100%; 
@@ -112,7 +105,7 @@
         /* Mesaj stili */
         .message {
             position: absolute;
-            bottom: 7%;
+            bottom: 12vh;
             left: 0;
             right: 0;
             text-align: center;
@@ -120,6 +113,7 @@
             opacity: 0;
             animation: fadeInMessage 2s ease-out 4s forwards;
             text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            padding: 0 20px;
         }
 
         @keyframes fadeInMessage {
@@ -138,10 +132,7 @@
             opacity: 0;
             animation: fadeInParticles 2s ease-out 3s forwards;
         }
-        @keyframes fadeInParticles {
-            to { opacity: 1; }
-        }
-
+        @keyframes fadeInParticles { to { opacity: 1; } }
 
         .particle {
             position: absolute;
@@ -149,29 +140,30 @@
             border-radius: 50%;
             animation: float linear infinite;
         }
+        @keyframes float { to { transform: translateY(-100vh); } }
 
-        @keyframes float {
-            to { transform: translateY(-100vh); }
-        }
-
-        /* Ok butonları */
-        .arrow {
-            position: fixed;
+        /* Ok Butonları Konteyneri */
+        .arrow-container {
+            position: absolute;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            cursor: pointer;
-            opacity: 0;
-            animation: fadeInArrow 2s forwards 3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
             z-index: 100;
         }
 
-        .down-arrow {
-            bottom: 30px;
+        .arrow {
+            cursor: pointer;
+            opacity: 1;
+            transition: opacity 0.3s ease;
         }
-
-        .up-arrow {
-            top: 30px;
-            display: none;
+        
+        #downArrow {
+             opacity: 0;
+             animation: fadeInArrow 2s forwards 3s;
         }
 
         .arrow-v {
@@ -183,504 +175,396 @@
             transition: all 0.3s ease;
         }
 
-        .up-arrow .arrow-v {
-            transform: rotate(180deg);
-        }
+        .up-arrow .arrow-v { transform: rotate(180deg); }
+        .arrow:hover .arrow-v { border-top-color: white; }
 
-        .arrow:hover .arrow-v {
-            border-top-color: white;
-            transform: translateY(5px);
-        }
-
-        .up-arrow:hover .arrow-v {
-            transform: rotate(180deg) translateY(5px);
-        }
-
-        @keyframes fadeInArrow {
-            to { opacity: 1; }
-        }
+        @keyframes fadeInArrow { to { opacity: 1; } }
         
-        /* Sayfa düzeni */
-        .page-container {
-            min-height: 200vh;
-        }
-
-        .second-page {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding-top: 10vh;
-            min-height: 100vh;
-        }
-
-        /* Typewriter textarea */
-        .typewriter-textarea {
-            width: 100%;
-            min-height: 200px;
-            background: transparent;
-            border: none;
-            color: white;
-            font-family: 'Courier New', monospace;
-            font-size: 16px;
-            resize: none;
-            outline: none;
-            padding: 10px;
-        }
-
-        .typewriter-textarea::placeholder {
-            color: rgba(255,255,255,0.5);
-            animation: blink 1s step-end infinite;
-        }
-
-        @keyframes blink {
-            from, to { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-
-        /* aşşağıdaki kutunun kendisi */
+        /* Yazı kutusu */
         .text-box {
             width: 70%;
-            min-height: 60vh;
-            max-height: 60vh;
-            background-color: #333333 ;
+            height: 70vh;
+            background-color: #333333;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
             padding: 40px;
             box-sizing: border-box;
-            opacity: 0.45;
             font-family: 'Courier New', monospace;
-            font-size: 24px;
             color: white;
-            text-align: left;
             position: relative;
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            margin: 20vh auto;
-            
-            overflow-y: scroll; /* MODIFIED: Enabled vertical scrolling */
-            scrollbar-width: thin; /* Firefox */
+            overflow-y: scroll;
+            scrollbar-width: thin;
             scrollbar-color: #564242 rgba(0,0,0,0.2);
+            margin: 20px 0;
         }
-
-        /* Webkit tarayıcılar için scrollbar stilini gizle */
-        .text-box::-webkit-scrollbar {
-            width: 8px; /* Width of the scrollbar */
+        .text-box::-webkit-scrollbar { width: 8px; }
+        .text-box::-webkit-scrollbar-track { background: #333333; border-radius: 10px; }
+        .text-box::-webkit-scrollbar-thumb { background-color: #fbbf24; border-radius: 10px; border: 2px solid #333333; }
+        .text-box h1 { font-weight: bold; margin-top: 0; color: #fff; text-align: center; font-size: 24px;}
+        .prlynyzi { 
+            font-size: 20px; 
+            color: #fff; 
+            text-shadow: 0 0 15px #fff; 
+            line-height: 1.5;
+            margin-bottom: 30px;
         }
-
-        .text-box::-webkit-scrollbar-track {
-            background: #333333; /* Color of the scrollbar track */
-            border-radius: 10px;
-        }
-
-        .text-box::-webkit-scrollbar-thumb {
-            background-color: #fbbf24; /* Color of the scrollbar thumb */
-            border-radius: 10px;
-            border: 2px solid #333333; /* Padding around thumb */
-        }
-
-        /* Metin içeriği için ekstra stil */
-        .text-box h1 {
+        .text-box a {
+            text-decoration: none;
+            color: #fbbf24;
             font-weight: bold;
-            margin-top: 0;
-            color: #fff;
-            text-align: center;
         }
-        /* parlayan yazı */
-        .prlynyzi {
-            font-size: 20px;
-            color: #fff;
-            text-shadow: 0 0 15px #fff;
-            
+        .text-box a:hover {
+            text-decoration: underline;
         }
 
-    </style>
-    <style>
-        /* General adjustments for smaller screens */
-        @media (max-width: 1024px) {
-            .video-container { width: 90%; }
-            .video-container::before { font-size: 3rem; } /* Will be hidden anyway */
+        /* Fotoğraf Galerisi Stilleri */
+        .photo-gallery-container {
+            width: 80%;
+            display: flex;
+            flex-wrap: wrap; 
+            justify-content: center; 
+            gap: 25px; 
+            padding-bottom: 80px;
+        }
 
+        .photo-box {
+            background-color: #333333;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            width: 280px; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .photo-box:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 0 25px rgba(251, 191, 36, 0.4);
+        }
+        .photo-box img { 
+            width: 100%; 
+            height: 250px; 
+            object-fit: cover; 
+            display: block; 
+        }
+        .photo-info { 
+            padding: 15px; 
+            color: #e5e7eb; 
+            font-family: 'Courier New', monospace; 
+            font-size: 14px; 
+            background-color: #3e3e3e; 
+            border-top: 1px solid rgba(255, 255, 255, 0.1); 
+        }
+        .photo-info p { 
+            margin: 5px 0; 
+            text-align: left; 
+        }
+
+        /* Diğer stiller */
+        .message-box-container { 
+            position: fixed; 
+            top: 50%; 
+            left: 0; 
+            transform: translateY(-50%) translateX(-100%); 
+            z-index: 1000; 
+            transition: transform 0.5s ease-in-out; 
+            padding-right: 20px; 
+        }
+        .message-box-container.show { 
+            transform: translateY(-50%) translateX(0); 
+        }
+        .message-box { 
+            background-color: rgba(24, 24, 24, 0.7); 
+            border: 1px solid rgba(255, 255, 255, 0.3); 
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5); 
+            padding: 20px 30px; 
+            border-radius: 10px; 
+            max-width: 300px; 
+            text-align: center; 
+        }
+        .message-box p { 
+            margin: 0; 
+            font-size: 1.1rem; 
+            line-height: 1.5; 
+            color: #e5e7eb; 
+        }
+        .sidebar-toggle { 
+            position: fixed; 
+            top: 50%; 
+            left: 0; 
+            transform: translateY(-50%); 
+            width: 7px; 
+            height: 280px; 
+            background-color: rgba(255, 255, 255, 0.8); 
+            border-top-right-radius: 10px; 
+            border-bottom-right-radius: 10px; 
+            cursor: pointer; 
+            z-index: 1001; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.6); 
+            transition: background-color 0.3s ease; 
+        }
+        .sidebar-toggle:hover { 
+            background-color: rgba(255, 255, 255, 1); 
+        }
+        .spotify-player { 
+            position: fixed; 
+            top: 20px; 
+            right: 20px; 
+            width: 300px; 
+            height: 152px; 
+            z-index: 1000; 
+            opacity: 0.8; 
+            transition: all 0.3s ease; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0 0 15px rgba(0,0,0,0.7); 
+        }
+        .spotify-player:hover { 
+            opacity: 1; 
+            transform: scale(1.03); 
+        }
+
+        /* Medya Sorguları */
+        @media (max-width: 768px) {
+            .text-box, .photo-gallery-container { 
+                width: 95%; 
+                padding: 20px;
+            }
+            .text-box {
+                height: 60vh;
+            }
+            .photo-box { 
+                width: 100%; 
+                max-width: 300px; 
+            }
+            .spotify-player, .sidebar-toggle { 
+                display: none; 
+            }
             .message {
+                bottom: 15vh;
                 font-size: 1rem;
             }
-
-            .text-box {
-                width: 90%;
-                padding: 20px;
-                font-size: 18px;
-                min-height: 50vh;
-                max-height: 70vh;
-                margin: 10vh auto;
-            }
-
             .prlynyzi {
-                font-size: 20px;
-            }
-
-            .arrow-v {
-                border-left: 8px solid transparent;
-                border-right: 8px solid transparent;
-                border-top: 12px solid rgba(255,255,255,0.8);
+                font-size: 16px;
             }
         }
 
-        /* Adjustments for even smaller screens (e.g., mobile phones) */
-        @media (max-width: 768px) {
-            .video-container { width: 95%; border-width: 3px; }
-            .video-container::before { font-size: 2.5rem; }
-
-            .message {
-                font-size: 0.9rem;
-            }
-
+        @media (max-width: 480px) {
             .text-box {
-                width: 95%;
                 padding: 15px;
+                height: 65vh;
+            }
+            .prlynyzi {
                 font-size: 14px;
-                min-height: 45vh;
-                max-height: 80vh;
-                margin: 5vh auto;
             }
-
-            .prlynyzi {
-                font-size: 20px;
-            }
-
-            .arrow-v {
-                border-left: 6px solid transparent;
-                border-right: 6px solid transparent;
-                border-top: 10px solid rgba(255,255,255,0.8);
+            .video-container {
+                width: 95%;
             }
         }
-
-        /* Specific adjustment for very narrow/short screens (like 1440x180) */
-        @media (max-width: 1440px) and (max-height: 300px) {
-            .video-container { width: 70%; max-width: 600px; }
-            .video-container::before { font-size: 2rem; }
-            
-            .message {
-                font-size: 0.8rem;
-                bottom: 2%;
-            }
-            .text-box {
-                width: 80%;
-                min-height: 40vh;
-                max-height: 50vh;
-                font-size: 12px;
-                padding: 10px;
-                margin: 5vh auto;
-            }
-            .prlynyzi {
-                font-size: 20px;
-            }
-            .arrow {
-                bottom: 10px;
-                top: 10px;
-            }
-            .arrow-v {
-                border-left: 5px solid transparent;
-                border-right: 5px solid transparent;
-                border-top: 8px solid rgba(255,255,255,0.8);
-            }
-        }
-
-        /* General adjustments for larger screens (e.g., desktops with higher resolution) */
-        @media (min-width: 1600px) {
-            .video-container { width: 70%; max-width: 900px; }
-            .video-container::before { font-size: 5rem; }
-
-            .message {
-                font-size: 1.5rem;
-            }
-            .text-box {
-                width: 60%;
-                font-size: 28px;
-                padding: 50px;
-            }
-            .prlynyzi {
-                font-size: 20px;
-            }
-        }
-        /* Uyarı Kutusu Stilleri */
-        .message-box-container {
-            position: fixed;
-            top: 50%;
-            left: 0;
-            transform: translateY(-50%) translateX(-100%); /* Başlangıçta ekran dışı */
-            z-index: 1000;
-            transition: transform 0.5s ease-in-out; /* Animasyon için geçiş */
-            padding-right: 20px; /* Kenar çubuğu ile boşluk için */
-        }
-
-        .message-box-container.show {
-            transform: translateY(-50%) translateX(0); /* Ekrana gel */
-        }
-
-        .message-box {
-            background-color: rgba(24, 24, 24, 0.7); /* Şeffaf koyu arka plan */
-            border: 1px solid rgba(255, 255, 255, 0.3); /* İnce beyaz dış hat */
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5); /* Parlak dış hat */
-            padding: 20px 30px;
-            border-radius: 10px;
-            max-width: 300px; /* Maksimum genişlik */
-            text-align: center;
-        }
-
-        .message-box p {
-            margin: 0;
-            font-size: 1.1rem;
-            line-height: 1.5;
-            color: #e5e7eb; /* Mesaj rengi */
-        }
-
-        /* Yan Taraf Dikdörtgen Stilleri */
-        .sidebar-toggle {
-            position: fixed;
-            top: 50%;
-            left: 0; /* Sol kenara yapışık */
-            transform: translateY(-50%);
-            width: 7px; /* Dikdörtgenin genişliği */
-            height: 280px; /* Dikdörtgenin yüksekliği */
-            background-color: rgba(255, 255, 255, 0.8); /* Beyaz şeffaf renk */
-            border-top-right-radius: 10px;
-            border-bottom-right-radius: 10px;
-            cursor: pointer;
-            z-index: 1001; /* Uyarı kutusunun üstünde olmalı */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.6); /* Parlaklık */
-            transition: background-color 0.3s ease;
-        }
-
-        .sidebar-toggle:hover {
-            background-color: rgba(255, 255, 255, 1); /* Hover'da daha belirgin */
-        }
-
-        /* İsteğe bağlı: Yan çubukta okunabilir bir işaret (e.g., ok) */
-        .sidebar-toggle::before {
-            content: ' '; /* Veya '«' ya da başka bir ikon */
-            color: #181818;
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        
-        /* spoti */
-           /* Spotify Player Stilleri */
-           .spotify-player {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                width: 300px;
-                height: 152px;
-                z-index: 1000; /* Diğer elementlerin üstünde görünsün */
-                opacity: 0.8;
-                transition: all 0.3s ease;
-                border-radius: 12px;
-                overflow: hidden;
-                box-shadow: 0 0 15px rgba(0,0,0,0.7);
-            }
-
-         .spotify-player:hover {
-                    opacity: 1;
-                transform: scale(1.03);
-           }   
-
-        /* Responsive ayarlar */
-        @media (max-width: 768px) {
-            .spotify-player {
-         width: 250px;
-         height: 120px;
-            top: 10px;
-         right: 10px;
-        }
-}
-
-@media (max-width: 480px) {
-    .spotify-player {
-        width: 200px;
-        height: 100px;
-        top: 5px;
-        right: 5px;
-    }
-}
-
-
     </style>
 </head>
 <body>
 
-    <!--Spoti-->
-
-    <!-- Spotify Player (Sağ Üst Köşe) -->
     <div class="spotify-player">
-        <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/660jMHeY08a7NW8oA1IWjm?utm_source=generator&theme=0" 
-                width="300" 
-                height="152" 
-                frameborder="0" 
-                allowfullscreen="" 
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                loading="lazy">
-        </iframe>
+        <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/660jMHeY08a7NW8oA1IWjm?utm_source=generator&theme=0" width="300" height="152" frameborder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
     </div>
-
-    <!--Ana kod-->
+    
     <div class="message-box-container" id="messageBoxContainer">
         <div class="message-box">
             <p>Sayfada aşşağı yukarı hareket etmek için videonun altındaki "v" şeklindeki küçük oku kullanabilirsin ve yukarı çıkmak içinde "^" sembolünü kullanabilirsin:)<br>Ayrıca sağ üstteki listeyi spotifydan açarak müziğin sesini ayarlayabilirsin burdan açtığın zman çok yüksek geliyor.</br></p>
-            </div>
-    </div>
-
-    <div class="sidebar-toggle" id="sidebarToggle">
         </div>
-
-        <!--Main codes egeynn-->
-
+    </div>
+    
+    <div class="sidebar-toggle" id="sidebarToggle"></div>
     <div class="particles" id="particles"></div>
     
-    <div class="page-container" id="pageContainer">
-        <div class="main-content">
-            <div class="content">
-                <div class="video-container" id="videoContainer">
-                    <video id="video">
-                        <source src="video1.mp4" type="video/mp4">
-                        Tarayıcınız video etiketini desteklemiyor.
-                    </video>
-                </div>
+    <!-- Video Sayfası -->
+    <div id="videoPage" class="page">
+        <div class="content">
+            <div class="video-container" id="videoContainer">
+                <video id="video" controls>
+                    <source src="video1.mp4" type="video/mp4">
+                    Tarayıcınız video etiketini desteklemiyor.
+                </video>
             </div>
-            
-            <div class="message">Hayatımda olduğun için çok şanslıyım. Hayatımda olduğun için teşekkür ederim ❤</div>
-            
-            <div class="arrow down-arrow" id="downArrow">
+        </div>
+        <div class="message">Hayatımda olduğun için çok şanslıyım. Hayatımda olduğun için teşekkür ederim ❤</div>
+        <div class="arrow-container">
+             <div class="arrow down-arrow" id="downArrow">
                 <div class="arrow-v"></div>
             </div>
         </div>
+    </div>
+
+    <!-- Yazı Sayfası -->
+    <div id="textPage" class="page">
+        <div class="text-box" id="textBox">
+            <h1>1.Gün 27.05.2025 00:37</h1>
+            <p class="prlynyzi">"Bu sitenin kodunu yazmaya 26.05.2025 tarihinde başladım. Bunu bilmen ne kadar önemli bilmiyorum ama kendimi affettirmek için elimden gelen her şeyi yapmayı deneyeceğim. Bilmiyorum sitenin kodu tam olarak bittiğinde ve bu siteyi yayınlayıp sana attığımda hala konuşuyo olur muyuz? Yada sana atabilicek kadar engellenmemiş biçimde miyimdir? Ama umarım ki her şey iyi gider ve şu an bunu okuyosundur. Yada zaman ayırıp buraya kadar okur musun? Onuda bilmiyorum. Ama eğer ki okuyosan seni çok sevdiğimi bilmeni istiyorum. Site bitene kadar her gün buraya neler hissettiğim hakkında not bırakıcam umarım okursun. 4ay üstüne bile konuşmaya başlasakda garip bi şekilde sanki bi yabancıyla konuşuyomuş gibi değilde sanki kavgamızın ertesi günü kalkıp aynı şekilde konuşuyomuşuz gibi hissediyorum. Annen ve baban konusunda bu gün konuştuk anlattım ama gerçekten kötü hissediyorum çünkü sanki seni üzerek onları hayal kırıklığına uğratmış gibi hissediyorum ve ne kadar telafi etmem gerekmesede telafi etmem gerekiyomuş gibi hissediyorum. Bu gün yazıcaklarım bu kadar sanırım ama şu anda taslak belki ilerleyen saatlerde tekrar yazarım ve uzar seni seviyorum ve tekrar geri kazanıcağımı biliyorum seni seviyorum(00:51)."</p>
+            
+            <h1>27.05.2025(01:40)</h1>
+            <p class="prlynyzi">"Çoğunlukla oflamamın sebebi aramızda olan garip soğukluk ama buna rağmen arada mutlu olabiliceğim şeyler bulabiliyorum her gün gelip buraya bişeyler yazmak zor belki ama umurumda değil sitenin kodlaması tamamen bitene kadar ki aslında bittide sayılır. Üstte izlediğin videoyu bu gün yarın bitiririm. Bu gece uyumadan önce iyi geceler mesajıma kalp attığını kaçırdığımı sanma belki okurken yoo aslında hepsine attım dicen belki ama <a href="Kanıt.html">buraya</a> tıklayarak atmadığını kanıtlayan ssleri görebilirsin 😁. Şaka bi yana seninle konuşmak iyi geliyo iyi hissettiriyo teşekkür ederim seni seviyorum.(02:00)"</p>
+            
+            <h1>28.05.2025 23:36</h1>
+            <p class="prlynyzi">"Bugün bi kere daha farkettim ki anılarımda olduğun için ne kadar şanslı olduğumu bilmiyorum bugün ki benim hakkımdaki düşüncelerini ama ben seni hala çok seviyorum ve barışacağımıza inanıyorum. Sitenin ana fikri senden çıktı sen aklıma getirdin ama bunu bilmeden aslında sana yapılan bu büyük hediyeyi sen yapıyosun. Bugün sana seni seviyorum dediğim için gerçekten tuhaf hissettim. Acaba içinden ne düşündün diye gerçekten çok merak ediyorum. Umuyorum ki site birkaç güne bitecek seni seviyorum. Çekeceğim videoda ne olacağını bile bilmiyorum. Sen uyuduktan sonra ben bu metinleri yazmakla ve Şam dinleyerek seni düşünerek geçiriyorum zamanımı. Umarım bunları okurken yüzünde az da olsa tebessüm olur ve mutlu olursun. Sana seni seviyorum demek neden garip hissettirdi bilmiyorum ama gerçekten seni seviyorum. Sevmesem beni hiçbir şey bu siteyi yaptıramazdı. Normalde sesli mesaj atmayıda almayıda sevmem biliyosundur yüksek ihtimalle zaten ama seninle konuşurken ne sevmediğim aklıma geliyo nede sesli mesaj atmaya utanmam. Belki sen fark etmiyosun ama bunlar seninle alakalı küçük güzel iyi hissettiren detaylar. Seni seviyorum Ajan(00:53)"</p>
+            
+            <h1>29-30.05.2025 00:15</h1>
+            <p class="prlynyzi">"Evet sanırım artık sonuna geldik. Siteyi yaparken asıl amacım kendimi tamamıyla affettirmek değil öncelikle böyle düşünmeni istemem çünkü seninde dediğin gibi dünya kadar hediye alsamda yapsamda bu affettiricek bi durum değil. Lütfen böyle düşünerek okumuş olma. Videoyu yaparken ve sitenin son kodlarını yazarken elim ayağım boşaldı gerçekten. Burda bile hislerimi düzgün anlatamıyorum çünkü gerçekten çok gerginim elim ayağım titriyo . Videoyu çekerken ağlamamak için zor durdum en azından çok azıcıkta olsa birazcık sinirin geçse benim için yeter Rengin seni seviyorum(00:35)"</p>
+            
+            <h1>01.06.2025 1:59</h1>
+            <p class="prlynyzi">"Belki kendimi utanç gülünç duruma düşürüyorum karşında belki benden daha çok soğumanı uzaklaşmana neden oluyorum ama gerçekten seni çok özlüyorum ben bunu yazdıktan veya ekledikten ne kadar zaman sonra görürsün bilmiyorum ama kimseye anlatamadığım kimsenin dinlemiceği şeyleri dinlryip motivasyon veriyosun ve bunu seni dünyalar kadar üzmüş insana yapıyosun rengin ben gerçekten senin hakkını ödeyemem ama sana yemin ediyorum ki aramızı düzelticem gerekirse 1 sene sürsün ben düzelticem yaptığım saçma şeyleri telafi etmenin bi yolunu bi şekilde bulucam belki yaptığım şeyler seni etkilemicek belki umurunda olmicaklar ama beni bu kadae seven birini bulmuşken şansımı dibine kadar denemezsem o zaman kendimi daha çok yiyip bitiricem. Sen olmadan devam etmek istyemiyorum."</p>
+            
+            <h1>02.06.2025 00:44</h1>
+            <p class="prlynyzi">"Dürüst olmak gerekirse ne diyeceğimi bilmeden yazmaya başladım. Bu gün konuştuklarımız hakkında haklısın belki güvenmiyosun belki samimi gelmiyorum hepsi normal şeyler. Nasıl düzeltirim şu anlık bi fikrim olmasada halledicem. Bazen dediğin şeyler sanki bak böyle yapma böyle yaparsan daha kolay aramız iyi olur gibi tavsiyeler veriyomuşsun gibi hissettiriyo ne kadar öyle yapıyosun bilmiyorum ama böyle hissediyorum ve dediğin şeyleri yapıcam bilmiyorum sonunda barışmak isteyecek misin ama ben sonuna kadar zorlicam kendimi inanman için tekrar güvenmen için elimden ne geliyosa yapıcam. Çabam asla kesilmeyecek. Bunları okumak senin için ne kadar önemli bilmiyorum ama sana yazamadığım içimde kalan şeyleri burdan dile getirmek beni rahatlatıyor. Bazen iyi bazen kötü davranmanı da anlayabiliyorum yaptığım şeyler aklına gelince sinirlendiğini de biliyorum ama içinde bi yerlerde hala eski bizin olduğunun da farkındayım işte o zamanlarda senle konuşmayı kesmeyi istemiyorum gerçekten çok özledim seni çünkü ve bulduğum o anda da bırakmak istemiyorum benim için önemlisin bunu başta göstermeliydim bunun da farkındayım ve gerçekten pişmanım. Ben bu tarz şeylerde kimseye bu kadar uzun mesajlar yazmadım ama konu sen olunca bi değişiyorum yamuluyorum bi şair oluyorum. Bunlar belki sana duygusal gelicek bu kadar duygusal olmadığını söyledin ama sana gelince gereksiz saçma bi duygusal oluyorum Rengin hatalarımın farkındayım ve düzeltmek için şansım olduğu ilk anda ilk anda olabilecek en iyi şekilde kanıtlamak için elimden gelenin en iyisini yapıcam. Belki bunları söylemem senin açından hiç bir şey hissettirmiyo belki yalan söylediğimi düşünüyosun ama gerçekten bu sefer full dürüst olucam ve bi şekilde kanıtlicam(01:00)"</p>
+        </div>
         
-        <div class="second-page">
-            <div class="text-box" id="textBox">
-                <h1>1.Gün 27.05.2025 00:37</h1>
-                <p class="prlynyzi">“Bu sitenin kodunu yazmaya 26.05.2025 tarihinde başladım. Bunu bilmen ne kadar önemli bilmiyorum ama kendimi affettirmek için elimden gelen her şeyi yapmayı deneyeceğim. Bilmiyorum sitenin kodu tam olarak bittiğinde ve bu siteyi yayınlayıp sana attığımda hala konuşuyo olur muyuz? Yada sana atabilicek kadar engellenmemiş biçimde miyimdir? Ama umarım ki her şey iyi gider ve şu an bunu okuyosundur. Yada zaman ayırıp buraya kadar okur musun? Onuda bilmiyorum. Ama eğer ki okuyosan seni çok sevdiğimi bilmeni istiyorum. Site bitene kadar her gün buraya neler hissettiğim hakkında not bırakıcam umarım okursun. 4ay üstüne bile konuşmaya başlasakda garip bi şekilde sanki bi yabancıyla konuşuyomuş gibi değilde sanki kavgamızın ertesi günü kalkıp aynı şekilde konuşuyomuşuz gibi hissediyorum. Annen ve baban konusunda bu gün konuştuk anlattım ama gerçekten kötü hissediyorum çünkü sanki seni üzerek onları hayal kırıklığına uğratmış gibi hissediyorum ve ne kadar telafi etmem gerekmesede telafi etmem gerekiyomuş gibi hissediyorum. Bu gün yazıcaklarım bu kadar sanırım ama şu anda taslak belki ilerleyen saatlerde tekrar yazarım ve uzar seni seviyorum ve tekrar geri kazanıcağımı biliyorum seni seviyorum(00:51).”</p>
-                <h1>27.05.2025(01:40)</h1>
-                <p2 class="prlynyzi">“Çoğunlukla oflamamın sebebi aramızda olan garip soğukluk ama buna rağmen arada mutlu olabiliceğim şeyler bulabiliyorum her gün gelip buraya bişeyler yazmak zor belki ama umurumda değil sitenin kodlaması tamamen bitene kadar ki aslında bittide sayılır. Üstte izlediğin videoyu bu gün yarın bitiririm. Bu gece uyumadan önce iyi geceler mesajıma kalp attığını kaçırdığımı sanma belki okurken yoo aslında hepsine attım dicen belki ama <a style="text-decoration: none; color: #fff;" href="Kanıt.html"><u>buraya</u></a> tıklayarak atmadığını kanıtlayan ssleri görebilirsin 😁. Şaka bi yana seninle konuşmak iyi geliyo iyi hissettiriyo teşekkür ederim seni seviyorum.(02:00)</p2>
-                <h1>28.05.2025 23:36 </h1>
-                <p class="prlynyzi">“Bugün bi kere daha farkettim ki anılarımda olduğun için ne kadar şanslı olduğumu bilmiyorum bugün ki benim hakkımdaki düşüncelerini ama ben seni hala çok seviyorum ve barışacağımıza inanıyorum. Sitenin ana fikri senden çıktı sen aklıma getirdin ama bunu bilmeden aslında sana yapılan bu büyük hediyeyi sen yapıyosun. Bugün sana seni seviyorum dediğim için gerçekten tuhaf hissettim. Acaba içinden ne düşündün diye gerçekten çok merak ediyorum. Umuyorum ki site birkaç güne bitecek seni seviyorum. Çekeceğim videoda ne olacağını bile bilmiyorum. Sen uyuduktan sonra ben bu metinleri yazmakla ve Şam dinleyerek seni düşünerek geçiriyorum zamanımı. Umarım bunları okurken yüzünde az da olsa tebessüm olur ve mutlu olursun. Sana seni seviyorum demek neden garip hissettirdi bilmiyorum ama gerçekten seni seviyorum. Sevmesem beni hiçbir şey bu siteyi yaptıramazdı. Normalde sesli mesaj atmayıda almayıda sevmem biliyosundur yüksek ihtimalle zaten ama seninle konuşurken ne sevmediğim aklıma geliyo nede sesli mesaj atmaya utanmam. Belki sen fark etmiyosun ama bunlar seninle alakalı küçük güzel iyi hissettiren detaylar. Seni seviyorum Ajan(00:53)” </p>
-                <h1>29-30.05.2025 00:15 </h1>
-                <p class="prlynyzi">“Evet sanırım artık sonuna geldik. Siteyi yaparken asıl amacım kendimi tamamıyla affettirmek değil öncelikle böyle düşünmeni istemem çünkü seninde dediğin gibi dünya kadar hediye alsamda yapsamda bu affettiricek bi durum değil. Lütfen böyle düşünerek okumuş olma. Videoyu yaparken ve sitenin son kodlarını yazarken elim ayağım boşaldı gerçekten. Burda bile hislerimi düzgün anlatamıyorum çünkü gerçekten çok gerginim elim ayağım titriyo . Videoyu çekerken ağlamamak için zor durdum en azından çok azıcıkta olsa birazcık sinirin geçse benim için yeter Rengin seni seviyorum(00:35)”</p>
-                <h1>01.06.2025 1:59</h1>
-                <p class="prlynyzi">"Belki kendimi utanç gülünç duruma düşürüyorum karşında belki benden daha çok soğumanı uzaklaşmana neden oluyorum ama gerçekten seni çok özlüyorum ben bunu yazdıktan veya ekledikten ne kadar zaman sonra görürsün bilmiyorum ama kimseye anlatamadığım kimsenin dinlemiceği şeyleri dinlryip motivasyon veriyosun ve bunu seni dünyalar kadar üzmüş insana yapıyosun rengin ben gerçekten senin hakkını ödeyemem ama sana yemin ediyorum ki aramızı düzelticem gerekirse 1 sene sürsün ben düzelticem yaptığım saçma şeyleri telafi etmenin bi yolunu bi şekilde bulucam belki yaptığım şeyler seni etkilemicek belki umurunda olmicaklar ama beni bu kadae seven birini bulmuşken şansımı dibine kadar denemezsem o zaman kendimi daha çok yiyip bitiricem. Sen olmadan devam etmek istyemiyorum."</p>
-                <h1>02.06.2025 00:44</h1>
-                <p1 class="prlynyzi">“Dürüst olmak gerekirse ne diyeceğimi bilmeden yazmaya başladım. Bu gün konuştuklarımız hakkında haklısın belki güvenmiyosun belki samimi gelmiyorum hepsi normal şeyler. Nasıl düzeltirim şu anlık bi fikrim olmasada halledicem. Bazen dediğin şeyler sanki bak böyle yapma böyle yaparsan daha kolay aramız iyi olur gibi tavsiyeler veriyomuşsun gibi hissettiriyo ne kadar öyle yapıyosun bilmiyorum ama böyle hissediyorum ve dediğin şeyleri yapıcam bilmiyorum sonunda barışmak isteyecek misin ama ben sonuna kadar zorlicam kendimi inanman için tekrar güvenmen için elimden ne geliyosa yapıcam. Çabam asla kesilmeyecek. Bunları okumak senin için ne kadar önemli bilmiyorum ama sana yazamadığım içimde kalan şeyleri burdan dile getirmek beni rahatlatıyor. Bazen iyi bazen kötü davranmanıda anlayabiliyorum yaptığım şeyler aklına gelince sinirlendiğinide biliyorum ama içinde bi yerlerde hala eski bizin olduğununda farkındayım işte o zamanlarda senle konuşmayı kesmeyi istemiyorum gerçekten çok özledim seni çünkü ve bulduğum o anda da bırakmak istemiyorum benim için önemlisin bunu başta göstermeliydim bununda farkındayım ve gerçekten pişmanım. Ben bu tarz şeylerde kimseye bu kadar uzun mesajlar yazmadım ama konu sen olunca bi değişiyorum yamuluyorum bi şair oluyorum. Bunlar belki sana duygusal gelicek bu kadar duygusal olmadığını söyledin ama sana gelince gereksiz saçma bi duygusal oluyorum Rengin hatalarımın farkındayım ve düzeltmek için şansım olduğu ilk anda ilk anda olabilecek en iyi şekilde kanıtlamak için elimden gelenin en iyisini yapıcam. Belki bunları söylemem senin açından hiç bir şey hissettirmiyo belki yalan söylediğimi düşünüyosun ama gerçekten bu sefer full dürüst olucam ve bi şekilde kanıtlicam(01:00)"</p1>
-                <div class="arrow up-arrow" id="upArrow">
-                    <div class="arrow-v"></div>
-                </div>
+        <div class="arrow-container">
+            <div class="arrow up-arrow" id="upArrowToVideo">
+                <div class="arrow-v"></div>
+            </div>
+            <div class="arrow down-arrow" id="downArrowToGallery">
+                <div class="arrow-v"></div>
             </div>
         </div>
     </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- Galeri Sayfası -->
+    <div id="galleryPage" class="page">
+        <div class="photo-gallery-container">
+             <div class="photo-box">
+                 <img src="1.jpg" alt="Anı 1">
+                 <div class="photo-info">
+                     <p><strong>Not:</strong> sarhoştun, canım çok sıkkındı beni taklit ettiğini söylemiştin.</p>
+                     <p><strong>Konum:</strong> Kocaeli, Başiskele</p>
+                     <p><strong>Tarih:</strong> 31.12.2023</p>
+                 </div>
+             </div>
+             <div class="photo-box">
+                 <img src="2.JPG" alt="Anı 2">
+                 <div class="photo-info">
+                     <p><strong>Not:</strong> İlk buluşmamızdı, telefonla çok ilgilendiğin için beni beğenmediğinden korkmuştum. Ne kadar daha önce yüz yüze gelmiş olsak bile.</p>
+                     <p><strong>Konum:</strong> İzmit, KahveDünyası</p>
+                     <p><strong>Tarih:</strong> 16.12.2023</p>
+                 </div>
+             </div>
+             <div class="photo-box">
+                 <img src="3.jpg" alt="Anı 3">
+                 <div class="photo-info">
+                     <p><strong>Not:</strong> Wallpaper istiyorum demiştim bunlar çok güzel demiştim, Bunu atmıştın.</p>
+                     <p><strong>Konum:</strong> Kocaeli, Başiskele</p>
+                     <p><strong>Tarih:</strong> 17.12.2023</p>
+                 </div>
+             </div>
+             <div class="photo-box">
+                 <img src="4.jpg" alt="Anı 4">
+                 <div class="photo-info">
+                     <p><strong>Not:</strong> Çiçek almıştım çok mutlu olmuştun, Ciddi bi kavgamızda bunu çizmiştim.</p>
+                     <p><strong>Konum:</strong> İzmit, ncty durakları</p>
+                     <p><strong>Tarih:</strong> 02.01.2024</p>
+                 </div>
+             </div>
+             <div class="photo-box">
+                 <img src="5.jpg" alt="Anı 5">
+                 <div class="photo-info">
+                     <p><strong>Not:</strong> Bize geldiğin ilk seferdi, Annemlerin kıbrıstan getirdiği küçük alkol şişelerinin fotoğraflarını çekmiştin.</p>
+                     <p><strong>Konum:</strong> Kocaeli, Kartepe</p>
+                     <p><strong>Tarih:</strong> 06.01.2024</p>
+                 </div>
+             </div>
+             <div class="photo-box">
+                 <img src="6.jpg" alt="Anı 6">
+                 <div class="photo-info">
+                     <p><strong>Not:</strong> Çok güzel bi kafe demiştin sürekli gitmeye başlamıştık.</p>
+                     <p><strong>Konum:</strong> 40°45'44.8"N 29°55'42.2"E kafenin kordinatları.</p>
+                     <p><strong>Tarih:</strong> 02.02.2024</p>
+                 </div>
+             </div>
+        </div>
+        <div class="arrow-container">
+             <div class="arrow up-arrow" id="upArrowToText">
+                <div class="arrow-v"></div>
+            </div>
+        </div>
+    </div>
+    
     <script>
-
-        //spoti
-        // Spotify player'ı mobilde gizle/göster (isteğe bağlı)
-        function handleSpotifyPlayer() {
-            const spotifyPlayer = document.querySelector('.spotify-player');
-            if (window.innerWidth < 768) {
-            spotifyPlayer.style.display = 'none'; // Mobilde gizle
-            // Veya daha küçük boyutlarda göstermek isterseniz:
-            // spotifyPlayer.style.width = '180px';
-            // spotifyPlayer.style.height = '80px';
-            } else {
-            spotifyPlayer.style.display = 'block'; // Masaüstünde göster
-            }
-        }
-
-window.addEventListener('resize', handleSpotifyPlayer);
-window.addEventListener('load', handleSpotifyPlayer);
-
-
-        //main kodlar
-
-         const messageBoxContainer = document.getElementById('messageBoxContainer');
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        let timer; // Zamanlayıcıyı tutacak değişken
-
-        // Mesaj kutusunu göster ve sonra gizle
-        function showAndHideMessageBox() {
-            clearTimeout(timer); // Önceki zamanlayıcıyı temizle (eğer varsa)
-            messageBoxContainer.classList.add('show'); // Kutuyu göster
-
-            // 5 saniye sonra kutuyu gizle
-            timer = setTimeout(() => {
-                messageBoxContainer.classList.remove('show'); // Kutuyu gizle
-            }, 5000); // 5 saniye = 5000 milisaniye
-        }
-
-        // Sayfa yüklendiğinde 5 saniye sonra otomatik olarak uyarıyı göster
-         document.addEventListener('DOMContentLoaded', () => {
-          setTimeout(() => {
-         showAndHideMessageBox();
-         }, 5000); // 5000 milisaniye = 5 saniye
-        });
-
-        // Yan çubuğa tıklandığında uyarıyı tekrar göster
-        sidebarToggle.addEventListener('click', () => {
-            showAndHideMessageBox();
-        });
-
-
-        // DEĞİŞTİRİLEN JAVASCRIPT KISMI BAŞLANGICI
-        const videoContainer = document.getElementById('videoContainer');
-        const video = document.getElementById('video');
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Element Seçimleri ---
+        const videoPage = document.getElementById('videoPage');
+        const textPage = document.getElementById('textPage');
+        const galleryPage = document.getElementById('galleryPage');
+        
         const downArrow = document.getElementById('downArrow');
-        const upArrow = document.getElementById('upArrow');
-        const textBox = document.getElementById('textBox');
-        const pageContainer = document.getElementById('pageContainer');
+        const upArrowToVideo = document.getElementById('upArrowToVideo');
+        const downArrowToGallery = document.getElementById('downArrowToGallery');
+        const upArrowToText = document.getElementById('upArrowToText');
 
-        // Initial state: hide controls
-        if (video) {
-            video.controls = false;
-        }
+        const textArrows = upArrowToVideo.parentElement;
+        const galleryArrows = upArrowToText.parentElement;
 
-        // Event listeners to show/hide controls on hover (Still useful)
-        videoContainer.addEventListener('mouseenter', function() {
-            if (video) {
-                video.controls = true;
-            }
+        // --- Başlangıç Ayarları ---
+        window.scrollTo(0, 0);
+        textArrows.style.display = 'none';
+        galleryArrows.style.display = 'none';
+
+        // --- Olay Dinleyicileri ---
+        // 1. Videodan Yazı Kutusuna Git
+        downArrow.addEventListener('click', function() {
+            textPage.scrollIntoView({behavior: 'smooth'});
+            downArrow.parentElement.style.display = 'none';
+            textArrows.style.display = 'flex';
         });
 
-        videoContainer.addEventListener('mouseleave', function() {
-            if (video && video.paused) {
-                video.controls = false;
-            }
+        // 2. Yazı Kutusundan Videoya Geri Dön
+        upArrowToVideo.addEventListener('click', function() {
+            videoPage.scrollIntoView({behavior: 'smooth'});
+            textArrows.style.display = 'none';
+            downArrow.parentElement.style.display = 'flex';
         });
 
-        // Event listeners to manage video controls and container class (if needed for other styles)
-        if (video) {
-            video.addEventListener('play', function() {
-                video.controls = true; // Ensure controls are shown when playing
-            });
+        // 3. Yazı Kutusundan Galeriye Git
+        downArrowToGallery.addEventListener('click', function() {
+            galleryPage.scrollIntoView({behavior: 'smooth'});
+            textArrows.style.display = 'none';
+            galleryArrows.style.display = 'flex';
+        });
 
-            video.addEventListener('pause', function() {
-                // Controls visibility on pause is handled by mouseleave logic
-            });
+        // 4. Galeriden Yazı Kutusuna Geri Dön
+        upArrowToText.addEventListener('click', function() {
+            textPage.scrollIntoView({behavior: 'smooth'});
+            galleryArrows.style.display = 'none';
+            textArrows.style.display = 'flex';
+        });
 
-            video.addEventListener('ended', function() {
-                video.controls = false; // Hide controls when ended
-                downArrow.style.display = 'block';
-            });
+        // --- Diğer Fonksiyonlar ---
+        const messageBoxContainer = document.getElementById('messageBoxContainer');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        let timer;
+        
+        function showAndHideMessageBox() {
+            clearTimeout(timer);
+            messageBoxContainer.classList.add('show');
+            timer = setTimeout(() => {
+                messageBoxContainer.classList.remove('show');
+            }, 8000);
         }
-        // DEĞİŞTİRİLEN JAVASCRIPT KISMI BİTİŞİ
+        
+        setTimeout(showAndHideMessageBox, 5000);
+        sidebarToggle.addEventListener('click', showAndHideMessageBox);
 
-        // Partikül efekti oluşturma
+        // Partikül efekti
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
             if (!particlesContainer) return;
-
+            
             particlesContainer.innerHTML = '';
-            const particleCount = Math.floor(window.innerWidth / 10);
+            const particleCount = Math.floor(window.innerWidth / 15);
             
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
@@ -698,86 +582,36 @@ window.addEventListener('load', handleSpotifyPlayer);
                 particlesContainer.appendChild(particle);
             }
         }
-
-        // COMMENTED OUT: Disable mouse wheel scrolling for the whole page
-        // function disableScroll(e) {
-        //     e.preventDefault();
-        // }
-
-        // window.addEventListener('wheel', disableScroll, { passive: false });
-        // window.addEventListener('touchstart', disableScroll, { passive: false });
-        // window.addEventListener('touchmove', disableScroll, { passive: false });
-
-
-        // Sayfa yüklendiğinde partikülleri oluştur
-        window.addEventListener('load', function() {
-            createParticles();
-            window.scrollTo(0, 0);
-            
-            setTimeout(() => {
-                document.body.style.transition = 'background 1s ease';
-            }, 3500);
-        });
-
-        // Ok butonları işlevleri
-        downArrow.addEventListener('click', function() {
-            const pageHeight = window.innerHeight;
-            
-            window.scrollTo({
-                top: pageHeight,
-                behavior: 'smooth'
-            });
-            
-            if (textBox) {
-                textBox.style.opacity = '1';
-                textBox.style.transition = 'opacity 0.5s ease 0.5s';
-            }
-            upArrow.style.display = 'block';
-            this.style.display = 'none';
-        });
-
-        upArrow.addEventListener('click', function() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-            
-            if (textBox) {
-                textBox.style.opacity = '0.45';
-            }
-            downArrow.style.display = 'block';
-            this.style.display = 'none';
-        });
-
-        // Sayfa yenilendiğinde de en üste git
-        window.onbeforeunload = function() {
-            window.scrollTo(0, 0);
-        }
-        // Ekran boyutu değiştiğinde yeniden ayarla
-        function handleResize() {
-            const vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-            createParticles();
-        }
-
-        // Sayfa yüklendiğinde ve boyut değiştiğinde çalıştır
-        window.addEventListener('load', handleResize);
-        window.addEventListener('resize', handleResize);
-
-        // Viewport meta tag'i düzeltme (iOS için)
-        document.addEventListener('DOMContentLoaded', function() {
-            let vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-            
-            // iOS için viewport düzeltme
-            window.addEventListener('resize', function() {
-                setTimeout(function() {
-                    let vh = window.innerHeight * 0.01;
-                    document.documentElement.style.setProperty('--vh', `${vh}px`);
-                }, 100);
-            });
-        });
         
+        createParticles();
+        window.addEventListener('resize', createParticles);
+
+        // Spotify player responsive kontrolü
+        function handleSpotifyPlayer() {
+            const spotifyPlayer = document.querySelector('.spotify-player');
+            if (window.innerWidth < 768) {
+                spotifyPlayer.style.display = 'none';
+            } else {
+                spotifyPlayer.style.display = 'block';
+            }
+        }
+        
+        handleSpotifyPlayer();
+        window.addEventListener('resize', handleSpotifyPlayer);
+        
+        // Video otomatik oynatma denemesi
+        const video = document.getElementById('video');
+        if(video) {
+            video.muted = true;
+            const playPromise = video.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log('Auto-play prevented:', error);
+                });
+            }
+        }
+    });
     </script>
 </body>
 </html>
